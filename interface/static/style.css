@@ -1,0 +1,91 @@
+.site-header {
+    background-color: rgba(0, 0, 0, .85);
+    transition: ease-in-out color .15s;
+}
+
+.login_container{
+    max-width: 1320px;
+    align-self: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#backdrop{
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+.ModalERROR{
+    background-color: #dc3545;
+    color:white;
+}
+
+.ModalSUCCESS{
+    background-color: #198754;
+    color:white;
+}
+
+.ModalWARNING{
+    background-color: #ffc107;
+    color:white;
+}
+
+.inverted{
+    -webkit-filter: invert(1) !important;
+    filter:invert(1) !important;
+}
+
+#modal_msg{
+    color: black!important;
+}
+
+.accordion-button.collapsed {
+    color: #fff;
+    background-color: #6c757d;
+    border-color: #6c757d;
+  }
+
+.token{
+      color: #dc3545;
+}
+
+.token:hover{
+    color: #f01a2f;
+    cursor: pointer;
+}
+
+
+ /* Style the buttons that are used to open and close the accordion panel */
+ .accordion {
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    text-align: left;
+    border: none;
+    outline: none;
+    transition: 0.4s;
+    border-radius: 10px;
+    border-style: solid;
+    border-color: black;
+    border-width: 2px;
+  }
+  
+  /* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+  .active, .accordion:hover {
+    background-color: #ccc;
+  }
+  
+  /* Style the accordion panel. Note: hidden by default */
+  .panel {
+      width: 100%;
+    padding: 0 18px;
+    background-color: white;
+    display: none;
+    overflow: hidden;
+  } 

@@ -1,0 +1,25 @@
+<div class="login_container">
+<main class="form-signin">
+        <img class="mb-4 bg-secondary img-thumbnail" style="padding:10px; height: 200px;border-radius: 20px;" src="/static/logo.png" alt="">
+      <h1 class="h3 mb-3 fw-normal">Please Log In</h1>
+  
+      <div class="form-floating">
+        <input id="username" type="text" class="form-control was-validated" id="floatingInput" placeholder="Username">
+        <label for="floatingInput" class="text-muted">Username</label>
+      </div>
+      <br>
+      <div class="form-floating">
+        <input id="password" type="password" class="form-control was-validated" id="floatingPassword" placeholder="Password">
+        <label for="floatingPassword" class="text-muted">Password</label>
+      </div>
+      
+      <div class="checkbox mb-3">
+        <label>
+          <input id="remember_me" type="checkbox" value="remember-me"> remember-me
+        </label>
+      </div>
+      <button class="w-100 btn btn-lg btn-primary" onclick="login()" type="submit">Login</button>
+  </main>
+</div>
+
+<script src="/static/login.js"></script>

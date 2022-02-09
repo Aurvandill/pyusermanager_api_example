@@ -1,0 +1,61 @@
+
+<div style="display: flex;flex-direction: column;align-items: center;">
+    <img id="userpage_avatar" src="/static/404.png" style="height:200px;border-radius:100%;border-style:solid;border-width: 2px;"/>
+    
+    <h1 id="userpage_username">Username</h1>
+    
+    <!-- p elements as dirty spacers -->
+
+    <div id="delete" style="display:none">
+    <button class="btn btn-outline-danger" onclick="del_user()">Delete</button>
+    </div>
+    <p></p>
+    <p></p>
+
+    <button class="bg-primary accordion active">User_Info</button>
+    <div class="panel" style="display:block" id="user_info">
+        placeholder
+    </div>
+    
+    <button style="display:none" class="bg-secondary accordion" id="extended_info_button">Extended Info</button>
+    <div style="display:none" class="panel" id="token_info">
+        placeholder
+    </div>
+    
+    <button style="display:none" class="bg-secondary accordion" id="edit_button">Edit</button>
+    <div id="edit_accordion" style="display:none" class="panel">
+        <br/>
+            <div class="login_container">
+                <main class="form-signin">
+                    <h1 class="h3 mb-3 fw-normal">Edit Data</h1>
+                    <h5>changing you password as ad user doesn't do anything</h5>
+                    <br/>
+                    <div class="form-floating">
+                        <input id="password" type="password" class="form-control was-validated" id="floatingInput" placeholder="password">
+                        <label for="floatingInput" class="text-muted">Password</label>
+                    </div>
+                    <br>
+                    <div class="form-floating">
+                        <input id="password_confirm" type="password" class="form-control was-validated" id="floatingPassword" placeholder="Password_confirm">
+                        <label for="floatingPassword" class="text-muted">Password Confirmation</label>
+                    </div>
+                    <br>
+                    <div class="form-floating">
+                        <input id="email" type="password" class="form-control was-validated" id="floatingPassword" placeholder="email">
+                        <label for="floatingPassword" class="text-muted">Email</label>
+                    </div>
+                    <br>
+                    <label class="form-label" for="customFile">Avatar</label>
+                    <input type="file" style="max-width: 300px;" class="form-control" id="customFile" />
+                    <br>
+                    <div id ="perm_container">
+
+                    </div>
+                    <button class="w-100 btn btn-lg btn-success" onclick="change()" type="submit">Change Data</button>
+                </main>
+                </div>
+    </div> 
+    
+
+<script src="/static/accordion.js"></script>
+<script src="/static/user.js"></script>
