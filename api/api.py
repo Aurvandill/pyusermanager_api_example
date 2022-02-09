@@ -10,7 +10,11 @@ from cors import add_cors_headers
 from options import setup_options
 
 
-#configuring pyusermanager lib
+##########################################
+#                                        #
+# General Config Setup for Pyusermanager #
+#                                        #
+##########################################
 
 db_cfg = MYSQL_Provider(
     host="127.0.0.1", port=3306, user="test", passwd="test1234", db="users"
@@ -26,13 +30,44 @@ app.ctx.cfg = cfg
 
 import userapi
 
-#@app.route('/')
-#async def test(request):
-#    return json({'hello': 'world'})
+
+#########################################
+#                                       #
+#   From here on we assign routes       #
+#                                       #
+#########################################
+
 
 app.add_route(userapi.get_users, "/", methods=["POST"])
-app.add_route(userapi.get_users, "/users", methods=["GET"])
 app.add_route(userapi.get_info_for_header, "/header", methods=["GET"])
+
+
+#login/logout/register routes
+app.add_route(userapi.login_user,"/login",methods=["POST"])
+app.add_route(userapi.logout_user,"/logout",methods=["GET"])
+app.add_route(userapi.register_user,"/register",methods=["POST"])
+
+#to get versions of stuff
+app.add_route(userapi.version, "/version/pyusermanager", methods=["GET"])
+app.add_route(userapi.api_version, "/version/api", methods=["GET"])
+
+#Route to get useravatar
+app.add_route(userapi.get_avatar, "/avatar/<avatarname>", methods=["GET"])
+
+# Methods Regarding Users
+app.add_route(userapi.create_by_admin,"/admin/create",methods=["POST"])
+app.add_route(userapi.get_users, "/users", methods=["GET"])
+@app.route("/perms",methods=["GET","POST","DELETE"])
+async def handle_rest_perm(request):
+
+    if request.method == "GET":
+        return await userapi.get_perms(request)
+    elif request.method == "POST":
+        return await userapi.change_perm(request,True)
+    elif request.method == "DELETE":
+        return await userapi.change_perm(request,False)
+    else:
+        pass
 
 @app.route("/user/<username>",methods=["GET","PUT","DELETE"])
 async def handle_rest_user(request,username):
@@ -46,25 +81,17 @@ async def handle_rest_user(request,username):
     else:
         pass
 
-app.add_route(userapi.login_user,"/login",methods=["POST"])
-app.add_route(userapi.logout_user,"/logout",methods=["GET"])
-app.add_route(userapi.register_user,"/register",methods=["POST"])
-app.add_route(userapi.version, "/version/pyusermanager", methods=["GET"])
-app.add_route(userapi.api_version, "/version/api", methods=["GET"])
-app.add_route(userapi.get_avatar, "/avatar/<avatarname>", methods=["GET"])
 
 
-@app.route("/perms",methods=["GET","POST","DELETE"])
-async def handle_rest_perm(request):
 
-    if request.method == "GET":
-        return await userapi.get_perms(request)
-    elif request.method == "POST":
-        return await userapi.change_perm(request,True)
-    elif request.method == "DELETE":
-        return await userapi.change_perm(request,False)
-    else:
-        pass
+#########################################
+#                                       #
+#   Misc. Setup stuff                   #
+#                                       #
+#########################################
+
+
+
 
 @app.middleware("request")
 async def get_info(request):

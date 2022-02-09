@@ -51,6 +51,15 @@ def users():
         + filestuff.get_template("footer.html")
     )
 
+@app.get("/create_user")
+def admin_create():
+    return (
+        filestuff.get_template("header.html", **config)
+        + filestuff.get_template("admin_create.html")
+        + filestuff.get_template("footer.html")
+    )
+
+
 @app.get("/register")
 def users():
     return (

@@ -1,4 +1,5 @@
 var userpage_username = document.getElementById("userpage_username");
+var image_to_upload = document.getElementById("customFile");
 
 function del_user(){
 
@@ -85,7 +86,7 @@ async function get_user_data(){
 get_user_data()
 
 
-function change(){
+async function change(){
     //alert("would change stuff if that would be implemented lol")
 
     var dict = {}
@@ -113,11 +114,15 @@ function change(){
         dict["email"] = email
     }
 
-    handle_perms(dict)
-    handle_avatar(dict)
+    await handle_perms(dict)
+    if (image_to_upload.files[0]){
+        await handle_avatar(dict)
+    }
+    
     console.log(dict)
 
-    
+    post("PUT",dict,"user/"+userpage_username.textContent)
+
 }
 
 
@@ -133,8 +138,20 @@ function handle_perms(work_dict){
     
 }
 
-function handle_avatar(work_dict){
-
-    console.log("not implemented yet q.q")
+async function handle_avatar(work_dict){
+    var img_file = image_to_upload.files[0];
+    var reee = await toBase64(img_file)
+    work_dict["img"] = btoa(reee)
     
 }
+
+const toBase64 = file => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    //reader.readAsDataURL(file);
+    reader.readAsBinaryString(file)
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+});
+
+
+image_to_upload.type = "file"

@@ -12,6 +12,9 @@ from return_stuff import *
 
 import os
 
+from binascii import a2b_base64
+import imghdr
+
 app = Sanic.get_app("api_example")
 
 async def get_users(request):
@@ -63,19 +66,72 @@ async def update_user_info(request,username):
 
     logged_in, found_username = await is_logged_in(request.ctx.token,request.ctx.ip)
 
-    return json({"func":"update_user_info"})
-    pass
+    if not logged_in:
+      return json(get_json_from_args(Alert("you need to be logged in",ALERT_TYPE.DANGER),Redirect("/login")))  
+
+    try:
+        this_user = user(app.ctx.cfg,username)
+        this_user.info()
+    except Exception:
+        return json(get_json_from_args(Alert("User not found!",ALERT_TYPE.DANGER)))
+
+    if not (found_username == this_user.username or is_in_group_by_name(found_username,app.ctx.cfg.admin_group_name)):
+        return json(get_json_from_args(Alert("you are not allowed to change other users!",ALERT_TYPE.DANGER)))
+
+    json_dict = request.json
+
+    #print(json_dict["img"])
+    img_base64 = json_dict.get("img", None)
+    password = json_dict.get("password", None)
+    passwordconfirm = json_dict.get("passwordconfirm", None)
+    email = json_dict.get("email",None)
+
+    if password != passwordconfirm:
+        return json(get_json_from_args(Alert("passwords do not match!",ALERT_TYPE.DANGER)))
+
+    try:
+        if password is not None:
+            this_user.change(password=password)
+
+        if email is not None:
+            this_user.change(email=email)
+
+    except:
+        return json(get_json_from_args(Alert("supplied email or password could not be set",ALERT_TYPE.DANGER)))
+
+    if img_base64 is not None:
+        img_bytes = a2b_base64(img_base64)
+
+
+        filetype = imghdr.what(None,h=img_bytes)
+        if not(filetype == "gif" or filetype == "jpeg" or filetype == "png"):
+            return json(get_json_from_args(Alert("no Valid file given!",ALERT_TYPE.DANGER)))
+
+        try:
+            #create avatar file
+            with open(f"avatars/{username}","wb") as avatarfile:
+                avatarfile.write(img_bytes)
+
+            this_user.change(avatar=username)
+        except Exception:
+            return json(get_json_from_args(Alert("something went wrong while we wanted to set the avatar!",ALERT_TYPE.DANGER)))
+
+    
+    #change perm stuff if user is admin
+
+    if await is_in_group_by_name(found_username,app.ctx.cfg.admin_group_name):
+        perms = json_dict.get("perms",None)
+
+        for perm,add in perms.items():
+            print(perm,add)
+            Perm(app.ctx.cfg,perm).perm_user(username,add)
+
+    return json(get_json_from_args(Alert("Successfull Changes"),Redirect(f"/user/{username}")))
 
 async def delete_user(request,username):
     logged_in, found_username = await is_logged_in(request.ctx.token,request.ctx.ip)
 
     returnvalue = json(get_json_from_args(Alert("idk what happened",ALERT_TYPE.WARNING)))
-
-    print("-------------------")
-    print(await is_in_group(request.ctx.token,app.ctx.cfg.admin_group_name))
-    print(request.ctx.token)
-    print(app.ctx.cfg.admin_group_name)
-    print("-------------------")
 
     if not logged_in:
         return json(get_json_from_args(Alert("you are not logged in!",ALERT_TYPE.WARNING),Redirect("/")))
@@ -157,12 +213,41 @@ async def register_user(request):
     if password != password_confirm:
         return json(get_json_from_args(Alert("passwords do not match",ALERT_TYPE.WARNING)),status=HTTPStatus.BAD_REQUEST)
     try:
-        user(app.ctx.cfg,username).create(password,email=email)
+        await create_user(password,email,username)
         return json(get_json_from_args(Alert("user successfully created",ALERT_TYPE.SUCCESS),Redirect("/login")),status=HTTPStatus.CREATED)
     except PyUserExceptions.AlreadyExistsException:
         return json(get_json_from_args(Alert("user already exists",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
     except (TypeError, ValueError):
         return json(get_json_from_args(Alert("supplied Data is not Valid!",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
+
+
+async def create_user(password,username,email):
+    user(app.ctx.cfg,username).create(password,email=email)
+
+async def create_by_admin(request):
+
+    logged_in, found_username = await is_logged_in(request.ctx.token,request.ctx.ip)
+
+    if not await is_in_group_by_name(found_username,app.ctx.cfg.admin_group_name):
+        return json(get_json_from_args(Alert("you must be an admin to do this!",ALERT_TYPE.DANGER), Redirect("/")),status=HTTPStatus.BAD_REQUEST)
+    try:
+        json_dict = request.json
+        password = json_dict["password"]
+        username = json_dict["username"]
+        email = json_dict["email"]
+        perms = json_dict["perms"]
+
+        await create_user(password,username,email)
+
+        for perm,add in perms.items():
+            print(perm,add)
+            Perm(app.ctx.cfg,perm).perm_user(username,add)
+
+        return json(get_json_from_args(Alert("successfully created User",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
+
+    except Exception as err:
+        return json(get_json_from_args(Alert("could not create User!",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
+
 
 async def version(request):
     return json({"version":pyusermanager.__version__})

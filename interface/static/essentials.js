@@ -119,7 +119,7 @@ async function post(type, input_object = Object(), api_endpoint,include_token = 
         //create json from object
         requestOptions.body = JSON.stringify(input_object)
     }
-
+    console.log(requestOptions)
 
     const response = await fetch(api_url+"/"+api_endpoint, requestOptions);
     const data = await response.json().catch(error => {
