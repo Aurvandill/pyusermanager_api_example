@@ -213,11 +213,12 @@ async def register_user(request):
     if password != password_confirm:
         return json(get_json_from_args(Alert("passwords do not match",ALERT_TYPE.WARNING)),status=HTTPStatus.BAD_REQUEST)
     try:
-        await create_user(password,email,username)
+        await create_user(password,email=email,username=username)
         return json(get_json_from_args(Alert("user successfully created",ALERT_TYPE.SUCCESS),Redirect("/login")),status=HTTPStatus.CREATED)
     except PyUserExceptions.AlreadyExistsException:
         return json(get_json_from_args(Alert("user already exists",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
-    except (TypeError, ValueError):
+    except (TypeError, ValueError) as err:
+        print(err)
         return json(get_json_from_args(Alert("supplied Data is not Valid!",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
 
 
