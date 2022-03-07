@@ -49,7 +49,6 @@ app.add_route(userapi.register_user,"/register",methods=["POST"])
 
 #to get versions of stuff
 app.add_route(userapi.version, "/version/pyusermanager", methods=["GET"])
-app.add_route(userapi.api_version, "/version/api", methods=["GET"])
 
 #Route to get useravatar
 app.add_route(userapi.get_avatar, "/avatar/<avatarname>", methods=["GET"])
@@ -81,8 +80,9 @@ async def handle_rest_user(request,username):
     else:
         pass
 
-
-
+@app.route("/version/api", methods=["GET"])
+def api_version(request):
+    return json({"version":"1.0.0"})
 
 #########################################
 #                                       #

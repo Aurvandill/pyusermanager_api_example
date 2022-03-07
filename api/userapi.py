@@ -10,8 +10,8 @@ import pyusermanager.Token as Token
 
 from return_stuff import *
 
-import os
 
+import os
 from binascii import a2b_base64
 import imghdr
 
@@ -190,7 +190,6 @@ async def logout_user(request):
 
 async def register_user(request):
 
-
     if not app.ctx.cfg.public_registration:
         return json(get_json_from_args(Alert("registering is prohibited",ALERT_TYPE.WARNING),Redirect("/")),status = HTTPStatus.FORBIDDEN)
 
@@ -221,7 +220,6 @@ async def register_user(request):
         print(err)
         return json(get_json_from_args(Alert("supplied Data is not Valid!",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
 
-
 async def create_user(password,username,email):
     user(app.ctx.cfg,username).create(password,email=email)
 
@@ -249,12 +247,8 @@ async def create_by_admin(request):
     except Exception as err:
         return json(get_json_from_args(Alert("could not create User!",ALERT_TYPE.DANGER)),status=HTTPStatus.BAD_REQUEST)
 
-
 async def version(request):
     return json({"version":pyusermanager.__version__})
-
-async def api_version(request):
-    return json({"version":"1.0.0"})
 
 async def get_perms(request):
 
