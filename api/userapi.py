@@ -120,7 +120,7 @@ async def update_user_info(request, username):
         or is_in_group_by_name(found_username, app.ctx.cfg.admin_group_name)
     ):
         return json(
-            get_json_from_args(Alert(app.ctx.lang.perm_misc_error, ALERT_TYPE.DANGER))
+            get_json_from_args(Alert(app.ctx.lang.perm_misc_error, ALERT_TYPE.DANGER)), HTTPStatus.UNAUTHORIZED
         )
 
     json_dict = request.json
@@ -159,20 +159,20 @@ async def update_user_info(request, username):
         if not (filetype == "gif" or filetype == "jpeg" or filetype == "png"):
             return json(
                 get_json_from_args(
-                    Alert(app.ctx.lang.file_invalid_type, ALERT_TYPE.DANGER)
+                    Alert(app.ctx.lang.file_invalid_type, ALERT_TYPE.DANGER), HTTPStatus.BAD_REQUEST
                 )
             )
 
         try:
             # create avatar file
-            with open(f"avatars/{username}", "wb") as avatarfile:
+            with open(f"{app.ctx.folders['avatars']}/{username}", "wb") as avatarfile:
                 avatarfile.write(img_bytes)
 
             this_user.change(avatar=username)
         except Exception:
             return json(
                 get_json_from_args(
-                    Alert(app.ctx.lang.avatar_set_error, ALERT_TYPE.DANGER)
+                    Alert(app.ctx.lang.avatar_set_error, ALERT_TYPE.DANGER), HTTPStatus.INTERNAL_SERVER_ERROR
                 )
             )
 
@@ -202,7 +202,7 @@ async def delete_user(request, username):
     if not logged_in:
         return json(
             get_json_from_args(
-                Alert(app.ctx.lang.not_logged_in, ALERT_TYPE.WARNING), Redirect("/")
+                Alert(app.ctx.lang.not_logged_in, ALERT_TYPE.WARNING), Redirect("/"), HTTPStatus.UNAUTHORIZED
             )
         )
 
