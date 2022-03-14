@@ -27,8 +27,7 @@ async function get_user_data(){
 
 get_user_data()
 
-
-async function change(){
+async function create_user(){
     //alert("would change stuff if that would be implemented lol")
 
     var dict = {}
