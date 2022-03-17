@@ -107,7 +107,7 @@ async function post(type, input_object = Object(), api_endpoint,include_token = 
             if (token_cookie.length < 2){
                 console.log("did not append cookie to json")
             } else {
-                requestOptions.headers["Authorization"] = "Token "+getCookie("token");
+                requestOptions.headers["Authorization"] = "Bearer "+getCookie("token");
             }
         } 
     }

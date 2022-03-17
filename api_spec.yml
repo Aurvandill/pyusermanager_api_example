@@ -1,0 +1,182 @@
+openapi: '3.0.2'
+info:
+  title: UserAuth
+  version: '1.0.0'
+servers:
+  - url: https://127.0.0.1:8000
+
+components:
+  schemas:
+
+    Alert:
+      type: object
+      properties:
+        Alert:
+          type: object
+          properties:
+            alert_type:
+              type: string
+              description: alert kind
+            alert_msg:
+              type: string
+              description: alert message
+
+    Modal:
+      description: 'An Modal which should be displayed'
+      type: object
+      properties:
+        Modal:
+          type: object
+          properties:
+            modal_type:
+              type: string
+              description: modal type
+            modal_msg:
+              type: string
+              description: the message of the modal
+            modal_headline:
+              type: string
+              description: the headline for the modal
+
+    Redirect:
+      description: 'An Redirect which should occur on the frontend'
+      type: object
+      properties:
+        Redirect:
+          type: object
+          properties:
+            redirect_url:
+              type: string
+              description: the url to redirect to
+        
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+
+
+paths:
+  /login:
+    post:
+      summary: "Create a Session"
+      description: "Login with specified Credentials"
+      responses:
+        '200':
+          description: OK
+
+  /logout:
+    get:
+      summary: "Destroy a Session"
+      description: "Log Out and invalidate Session Server Side"
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                anyOf:
+                  - $ref: '#/components/schemas/Alert'
+                  - $ref: '#/components/schemas/Modal'
+                  - $ref: '#/components/schemas/Redirect'
+                      
+  /register:
+    post:
+      responses:
+        '200':
+          description: OK
+
+  /avatar/{username}:
+    get:
+      responses:
+        '200':
+          description: OK
+          content:
+            'image':
+              schema:
+                type: string
+                format: binary
+    parameters:
+      - name: username
+        in: path
+        description: username of the user you want to get the avatar for
+        required: true
+        schema:
+          type: string
+      
+  /version/userapi:
+    get:
+      description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            'application/json':
+              schema:
+                type: string
+
+  /admin/create:
+    post:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+
+  /users:
+    get:
+      summary: "Get Userinformation"
+      description: "Request Information for the specified User"
+      parameters: []
+      responses:
+        '200':
+          description: OK
+
+  /perms:
+    get:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+    post:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+    delete:
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+
+  /user/username:
+    get:
+      security:
+        - bearerAuth: []
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+    put:
+      security:
+        - bearerAuth: []
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+    delete:
+      security:
+        - bearerAuth: []
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+
+security:
+  - bearerAuth: []  

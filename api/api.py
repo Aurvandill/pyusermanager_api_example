@@ -59,7 +59,7 @@ def run(config_paras, debug):
 
         try:
             request.ctx.ip = request.ip
-        except:
+        except Exception:
             request.ctx.ip = None
 
         print(request.method)

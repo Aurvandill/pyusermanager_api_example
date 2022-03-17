@@ -19,7 +19,7 @@ def RegisterRoutes(route_prefix = "/"):
     app.add_route(api_register.register_user, f"{route_prefix}register", methods=["POST"])
 
     # to get versions of stuff
-    app.add_route(api_misc.version, f"{route_prefix}version/pyusermanager", methods=["GET"])
+    app.add_route(api_misc.version, f"/version/userapi", methods=["GET"])
 
 
     # Route to get useravatar
