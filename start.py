@@ -2,7 +2,7 @@
 
 from api import run
 
-import configparser
+from configobj import ConfigObj
 import argparse
 
 if __name__ == "__main__":
@@ -27,9 +27,7 @@ if __name__ == "__main__":
 
     print(inputvars.configfile)
 
-    config = configparser.ConfigParser()
-
-    config.read(inputvars.configfile)
+    config = ConfigObj(inputvars.configfile)
 
     #print(config["general"]["language"])
     run(config,inputvars.debug)

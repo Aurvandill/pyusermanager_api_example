@@ -4,8 +4,8 @@ from pyusermanager.Config import *
 from pyusermanager.Config.db_providers import *
 from sanic import Sanic
 
-def configure(config_paras):
-    
+
+def configure(config_paras: dict):
 
     app = Sanic.get_app("api_example")
 
@@ -15,60 +15,26 @@ def configure(config_paras):
     #                                        #
     ##########################################
 
-    if config_paras["db"]["provider"] == "mysql":
+    if config_paras["db"]["connection-settings"].get("port", None):
+        config_paras["db"]["connection-settings"]["port"] = int(config_paras["db"]["connection-settings"]["port"])
 
-        db_cfg = MYSQL_Provider(
-            host=config_paras["db"]["host"],
-            port=int(config_paras["db"]["port"]),
-            user=config_paras["db"]["user"],
-            passwd=config_paras["db"]["password"],
-            db=config_paras["db"]["db"],
-        )
-    elif config_paras["db"]["provider"] == "cockroachdb":
-        db_cfg = CockroachDB_Provider(
-            user=config_paras["db"]["user"],
-            password=config_paras["db"]["password"],
-            host=config_paras["db"]["host"],
-            database=config_paras["db"]["db"],
-        )
-    elif config_paras["db"]["provider"] == "oracle":
-        db_cfg = Oracle_Provider(
-            user=config_paras["db"]["user"],
-            password=config_paras["db"]["password"],
-            dsn=config_paras["db"]["dsn"],
-        )
-    elif config_paras["db"]["provider"] == "postgresql":
-        db_cfg = PostgreSQL_Provider(
-            user=config_paras["db"]["user"],
-            password=config_paras["db"]["password"],
-            host=config_paras["db"]["host"],
-            database=config_paras["db"]["db"],
-        )
-    elif config_paras["db"]["provider"] == "sqlite":
-        db_cfg = SQLite_Provider(
-            user=config_paras["db"]["user"],
-            filename=config_paras["db"]["filename"],
-        )
+    db_cfg = DBProviders[config_paras["db"]["provider"]].value(**config_paras["db"]["connection-settings"])
 
-    ad_cfg = AD_Config(
-        login = config_paras.getboolean("userapi_LDAP", "Login"),
-        address = config_paras["userapi_LDAP"]["address"],
-        base_dn = config_paras["userapi_LDAP"]["base_dn"],
-        group = config_paras["userapi_LDAP"]["group"],
-        groups_prefix = config_paras["userapi_LDAP"]["groups_prefix"],
-        suffix = config_paras["userapi_LDAP"]["suffix"],
-    )
+    if config_paras.get("LDAP", False):
+        ad_cfg = AD_Config(login=True, **config_paras["LDAP"])
+    else:
+        ad_cfg = AD_Config()
 
     cfg = General_Config(
-        auto_activate_accounts = config_paras.getboolean(
-            "userapi_general", "auto_activate_accounts"
-        ),
-        admin_group_name = config_paras["userapi_general"]["admin_group_name"],
-        public_registration = config_paras.getboolean(
-            "userapi_general", "auto_activate_accounts"
-        ),
-        adcfg = ad_cfg,
-        allow_avatars = config_paras.getboolean("userapi_general", "allow_avatars"),
+        auto_activate_accounts=config_paras["general"].as_bool("auto_activate_accounts"),
+        email_required=config_paras["general"].as_bool("email_required"),
+        admin_group_name=config_paras["general"]["admin_group_name"],
+        public_registration=config_paras["general"].as_bool("auto_activate_accounts"),
+        allow_avatars=config_paras["general"].as_bool("allow_avatars"),
+        password_reset_days_valid=int(config_paras["general"]["password_reset_days_valid"]),
+        username_min_len=int(config_paras["general"]["username_min_len"]),
+        password_min_len=int(config_paras["general"]["password_min_len"]),
+        adcfg=ad_cfg,
     )
     cfg.bind(db_cfg)
 

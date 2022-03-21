@@ -11,20 +11,12 @@ from . import userapi
 
 def run(config_paras, debug):
 
-    
     # creating sanic app
     app = Sanic("api_example")
     
-
-    # setting language
-    if config_paras["general"]["language"] == "german":
-        # add language to context
-        app.ctx.lang = LangGer()
-    elif config_paras["general"]["language"] == "english":
-        # add language to context
-        app.ctx.lang = LangEng()
-    else:
-        # add language to context
+    try:
+        app.ctx.lang = Language[config_paras["language"]].value()
+    except Exception as err:
         app.ctx.lang = LangEng()
 
     # add folder paths to app context
@@ -36,7 +28,7 @@ def run(config_paras, debug):
     #   From here on we assign routes       #
     #                                       #
     #########################################
-    userapi.configure(config_paras)
+    userapi.configure(config_paras["userapi"])
     userapi.RegisterRoutes("/")
 
     @app.route("/version/api", methods=["GET"])
@@ -70,4 +62,13 @@ def run(config_paras, debug):
     # Fill in CORS headers
     app.register_middleware(add_cors_headers, "response")
 
-    app.run(debug=debug)
+
+
+    host = config_paras.get("host","127.0.0.1")
+    port = int(config_paras.get("port",8080))
+    workers = int(config_paras.get("workers",1))
+    ssl = config_paras.get("ssl",None)
+
+
+
+    app.run(host=host, port=port, ssl=ssl, debug=debug,workers=workers)
