@@ -8,6 +8,8 @@ configobj = "*"
 sanic = "*"
 pyusermanager = "*"
 pymysql = "*"
+pyusermanager-api = "*"
+sws-webstuff = "*"
 
 [dev-packages]
 
