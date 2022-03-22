@@ -19,10 +19,6 @@ def run(config_paras, debug):
     except Exception as err:
         app.ctx.lang = languages.LangEng()
 
-    # add folder paths to app context
-
-    app.ctx.folders = config_paras["folders"]
-
     #########################################
     #                                       #
     #   From here on we assign routes       #
