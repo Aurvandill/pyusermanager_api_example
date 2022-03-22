@@ -1,0 +1,5 @@
+/.vscode
+/api/__pycache__
+/interface/__pycache__
+/api/*/__pycache__
+

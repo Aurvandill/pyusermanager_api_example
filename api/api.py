@@ -4,20 +4,20 @@ from sanic.response import json, file
 from .cors import add_cors_headers
 from .options import setup_options
 
-from .languages import *
+from sws_webstuff import languages
 
-from . import userapi
+import importlib
 
 
 def run(config_paras, debug):
 
     # creating sanic app
-    app = Sanic("api_example")
-    
+    app = Sanic(config_paras["app_name"])
+
     try:
-        app.ctx.lang = Language[config_paras["language"]].value()
+        app.ctx.lang = languages.Language[config_paras["language"]].value()
     except Exception as err:
-        app.ctx.lang = LangEng()
+        app.ctx.lang = languages.LangEng()
 
     # add folder paths to app context
 
@@ -28,8 +28,11 @@ def run(config_paras, debug):
     #   From here on we assign routes       #
     #                                       #
     #########################################
-    userapi.configure(config_paras["userapi"])
-    userapi.RegisterRoutes("/")
+
+    for mod in config_paras["modules"].keys():
+        api_module = importlib.import_module(mod)
+        api_module.configure(config_paras["modules"][mod], app)
+        api_module.RegisterRoutes(config_paras["modules"][mod]["route_prefix"], app)
 
     @app.route("/version/api", methods=["GET"])
     def api_version(request):
@@ -43,7 +46,6 @@ def run(config_paras, debug):
 
     @app.middleware("request")
     async def get_info(request):
-
         try:
             request.ctx.token = request.token
         except Exception:
@@ -62,13 +64,9 @@ def run(config_paras, debug):
     # Fill in CORS headers
     app.register_middleware(add_cors_headers, "response")
 
+    host = config_paras.get("host", "127.0.0.1")
+    port = int(config_paras.get("port", 8080))
+    workers = int(config_paras.get("workers", 1))
+    ssl = config_paras.get("ssl", None)
 
-
-    host = config_paras.get("host","127.0.0.1")
-    port = int(config_paras.get("port",8080))
-    workers = int(config_paras.get("workers",1))
-    ssl = config_paras.get("ssl",None)
-
-
-
-    app.run(host=host, port=port, ssl=ssl, debug=debug,workers=workers)
+    app.run(host=host, port=port, ssl=ssl, debug=debug, workers=workers)
