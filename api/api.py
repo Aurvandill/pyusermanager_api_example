@@ -30,9 +30,13 @@ def run(config_paras, debug):
     #########################################
 
     for mod in config_paras["modules"].keys():
-        api_module = importlib.import_module(mod)
-        api_module.configure(config_paras["modules"][mod], app)
-        api_module.RegisterRoutes(config_paras["modules"][mod]["route_prefix"], app)
+        try:
+            api_module = importlib.import_module(mod)
+            api_module.configure(config_paras["modules"][mod], app)
+            api_module.RegisterRoutes(config_paras["modules"][mod]["route_prefix"], app)
+        except:
+            ValueError(f"could not load module {mod}")
+            return 0
 
     @app.route("/version/api", methods=["GET"])
     def api_version(request):
