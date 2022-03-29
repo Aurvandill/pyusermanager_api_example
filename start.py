@@ -8,7 +8,7 @@ import argparse
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(
-        prog="kanjiku_backend.py",
+        prog="start.py",
         description="a backend for a manga website",
     )
 
