@@ -19,6 +19,8 @@ def run(config_paras, debug):
     except Exception as err:
         app.ctx.lang = languages.LangEng()
 
+    app.ctx.AuthProvider = None
+
     #########################################
     #                                       #
     #   From here on we assign routes       #
