@@ -45,4 +45,4 @@ you can also remove the server part to use the reference WSGI Server which shoul
 
 # 5. Notes
 
-blub
+the default avatar is a png version of a bootstrap icon -> the license for these icons can be found in bootstrap_icons_license
